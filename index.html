@@ -246,16 +246,19 @@
             { filename: 'placeholder', name: 'Carta de Ejemplo' }
         ];
 
+        // Configuration
+        const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+        const IMAGE_LOAD_TIMEOUT = 1000; // milliseconds
+
         // Load cards from the 'cartas' folder
         async function loadCards() {
             const gallery = document.getElementById('gallery');
-            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
             const foundCards = [];
 
             // Try to find each card with different extensions
             for (const card of cardDefinitions) {
                 let found = false;
-                for (const ext of imageExtensions) {
+                for (const ext of IMAGE_EXTENSIONS) {
                     const path = `cartas/${card.filename}.${ext}`;
                     
                     // Check if image exists by trying to load it
@@ -276,7 +279,8 @@
             }
 
             if (foundCards.length === 0) {
-                gallery.innerHTML = '<div class="no-cards">No se encontraron cartas en la carpeta "cartas".<br><br>Por favor, añade imágenes de cartas de tarot a la carpeta "cartas".<br><br>Formatos soportados: JPG, PNG, GIF, WEBP, SVG</div>';
+                const supportedFormats = IMAGE_EXTENSIONS.map(ext => ext.toUpperCase()).join(', ');
+                gallery.innerHTML = `<div class="no-cards">No se encontraron cartas en la carpeta "cartas".<br><br>Por favor, añade imágenes de cartas de tarot a la carpeta "cartas".<br><br>Formatos soportados: ${supportedFormats}</div>`;
                 return;
             }
 
@@ -306,8 +310,8 @@
                 img.onerror = () => resolve(false);
                 img.src = url;
                 
-                // Timeout after 1 second
-                setTimeout(() => resolve(false), 1000);
+                // Timeout
+                setTimeout(() => resolve(false), IMAGE_LOAD_TIMEOUT);
             });
         }
 

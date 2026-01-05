@@ -5,7 +5,7 @@ Esta carpeta contiene las imágenes de las cartas del tarot Disney.
 ## Instrucciones
 
 1. Añade tus imágenes de cartas de tarot en esta carpeta
-2. Los formatos soportados son: JPG, JPEG, PNG, GIF, WEBP
+2. Los formatos soportados son: JPG, JPEG, PNG, GIF, WEBP, SVG
 3. Nombra las cartas de forma descriptiva, por ejemplo:
    - `el-loco.jpg`
    - `el-mago.png`
