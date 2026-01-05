@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disney Tarot - Galería de Cartas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card-item {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 5px;
+            display: block;
+        }
+
+        .card-name {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-name {
+            color: white;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .no-cards {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .card-item img {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .card-item img {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎴 Disney Tarot 🎴</h1>
+            <p class="subtitle">Galería de Cartas del Tarot</p>
+        </header>
+
+        <div class="gallery" id="gallery">
+            <!-- Cards will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeBtn">&times;</button>
+            <img id="modalImage" src="" alt="">
+            <div class="modal-name" id="modalName"></div>
+        </div>
+    </div>
+
+    <script>
+        // Define the cards to load - update this array with your card filenames
+        // The script will automatically search for these files with common image extensions
+        const cardDefinitions = [
+            // Arcanos Mayores del Tarot
+            { filename: 'el-loco', name: 'El Loco' },
+            { filename: 'el-mago', name: 'El Mago' },
+            { filename: 'la-sacerdotisa', name: 'La Sacerdotisa' },
+            { filename: 'la-emperatriz', name: 'La Emperatriz' },
+            { filename: 'el-emperador', name: 'El Emperador' },
+            { filename: 'el-sumo-sacerdote', name: 'El Sumo Sacerdote' },
+            { filename: 'los-enamorados', name: 'Los Enamorados' },
+            { filename: 'el-carro', name: 'El Carro' },
+            { filename: 'la-justicia', name: 'La Justicia' },
+            { filename: 'el-ermitano', name: 'El Ermitaño' },
+            { filename: 'la-rueda-de-la-fortuna', name: 'La Rueda de la Fortuna' },
+            { filename: 'la-fuerza', name: 'La Fuerza' },
+            { filename: 'el-colgado', name: 'El Colgado' },
+            { filename: 'la-muerte', name: 'La Muerte' },
+            { filename: 'la-templanza', name: 'La Templanza' },
+            { filename: 'el-diablo', name: 'El Diablo' },
+            { filename: 'la-torre', name: 'La Torre' },
+            { filename: 'la-estrella', name: 'La Estrella' },
+            { filename: 'la-luna', name: 'La Luna' },
+            { filename: 'el-sol', name: 'El Sol' },
+            { filename: 'el-juicio', name: 'El Juicio' },
+            { filename: 'el-mundo', name: 'El Mundo' },
+            // Add placeholder for demonstration
+            { filename: 'placeholder', name: 'Carta de Ejemplo' }
+        ];
+
+        // Load cards from the 'cartas' folder
+        async function loadCards() {
+            const gallery = document.getElementById('gallery');
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            const foundCards = [];
+
+            // Try to find each card with different extensions
+            for (const card of cardDefinitions) {
+                let found = false;
+                for (const ext of imageExtensions) {
+                    const path = `cartas/${card.filename}.${ext}`;
+                    
+                    // Check if image exists by trying to load it
+                    try {
+                        const exists = await checkImageExists(path);
+                        if (exists) {
+                            foundCards.push({
+                                name: card.name,
+                                path: path
+                            });
+                            found = true;
+                            break;
+                        }
+                    } catch (error) {
+                        continue;
+                    }
+                }
+            }
+
+            if (foundCards.length === 0) {
+                gallery.innerHTML = '<div class="no-cards">No se encontraron cartas en la carpeta "cartas".<br><br>Por favor, añade imágenes de cartas de tarot a la carpeta "cartas".<br><br>Formatos soportados: JPG, PNG, GIF, WEBP, SVG</div>';
+                return;
+            }
+
+            // Display cards
+            foundCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card-item';
+                cardElement.innerHTML = `
+                    <img src="${card.path}" alt="${card.name}" loading="lazy">
+                    <div class="card-name">${card.name}</div>
+                `;
+                
+                // Add click event for zoom
+                cardElement.addEventListener('click', () => {
+                    openModal(card.path, card.name);
+                });
+                
+                gallery.appendChild(cardElement);
+            });
+        }
+
+        // Check if an image exists
+        function checkImageExists(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+                
+                // Timeout after 1 second
+                setTimeout(() => resolve(false), 1000);
+            });
+        }
+
+        // Open modal with zoomed image
+        function openModal(imagePath, imageName) {
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modalImage');
+            const modalName = document.getElementById('modalName');
+            
+            modalImage.src = imagePath;
+            modalName.textContent = imageName;
+            modal.classList.add('active');
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Event listeners
+        document.getElementById('closeBtn').addEventListener('click', closeModal);
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Load cards when page loads
+        window.addEventListener('DOMContentLoaded', loadCards);
+    </script>
+</body>
+</html>
