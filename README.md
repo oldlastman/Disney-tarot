@@ -47,3 +47,23 @@ Las cartas soportadas incluyen todos los Arcanos Mayores del Tarot tradicional.
 
 Incluye una carta de ejemplo (`placeholder.svg`) para demostrar la funcionalidad de la galería.
 
+## 🌐 GitHub Pages
+
+Este proyecto está configurado para funcionar con GitHub Pages.
+
+### Activar GitHub Pages
+
+1. Ve a la configuración del repositorio en GitHub
+2. Navega a **Settings** → **Pages**
+3. En la sección **Source**, selecciona:
+   - **Branch**: `main` (o la rama que desees publicar)
+   - **Folder**: `/ (root)`
+4. Haz clic en **Save**
+5. GitHub Pages generará una URL como: `https://oldlastman.github.io/Disney-tarot/`
+
+La galería estará disponible públicamente en esa URL una vez que GitHub Pages termine de construir el sitio (generalmente tarda 1-2 minutos).
+
+### Nota Técnica
+
+El archivo `.nojekyll` está incluido para evitar el procesamiento de Jekyll y garantizar que todos los archivos se sirvan correctamente.
+
